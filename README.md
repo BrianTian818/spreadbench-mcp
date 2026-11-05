@@ -71,6 +71,7 @@ curl -s https://spreadbench.com/api/v1/latest.json | python -m json.tool
 
 - Site: <https://spreadbench.com>
 - Methodology: <https://spreadbench.com/methodology.html>
+- Weekly analysis (issue 3 — issuance 432bp vs fund marks 616bp, the 184bp gap decomposed): <https://spreadbench.com/weekly.html>
 - Constituents: <https://spreadbench.com/constituents.html>
 - Citation formats: <https://spreadbench.com/citations.html>
 - Zenodo archive (data + recompute.py): <https://zenodo.org/records/23983572>
