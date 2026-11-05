@@ -74,6 +74,8 @@ curl -s https://spreadbench.com/api/v1/latest.json | python -m json.tool
 - Constituents: <https://spreadbench.com/constituents.html>
 - Citation formats: <https://spreadbench.com/citations.html>
 - Zenodo archive (data + recompute.py): <https://zenodo.org/records/23983572>
+- Official MCP Registry: [`com.spreadbench/ncsx`](https://registry.modelcontextprotocol.io/) (v0.2.3)
+
 
 ## About
 
