@@ -23,7 +23,7 @@ NCSX-IS  = Σ(spread_i × size_i) / Σ(size_i)
 
 Current level: **NCSX-IS 432.3 bp** (secured 391.2 / unsecured 540.1), 13 bonds · 6 issuers · $28.06B face value. Version `v0.2.1-real`, archived at Zenodo [10.5281/zenodo.23983572](https://zenodo.org/records/23983572) with a `recompute.py` that reproduces the index from raw inputs (pure stdlib).
 
-## Tools (8)
+## Tools (9)
 
 | Tool | Answers |
 |---|---|
@@ -33,6 +33,7 @@ Current level: **NCSX-IS 432.3 bp** (secured 391.2 / unsecured 540.1), 13 bonds 
 | `ncsx_bond` | Filtered lookup by issuer / ticker / note keyword (e.g. `"CoreWeave"`, `"GLXY"`, `"2031"`) — constituents have no CUSIPs |
 | `ncsx_curve` | The US Treasury par-yield curve used on each pricing date (14 tenors) + history |
 | `ncsx_sector` | Context: US high-yield OAS, investment-grade OAS and related indices with 30-day change |
+| `ncsx_filings` | SEC filing radar — last 45 days of filings for the 9 covered issuers, noise forms filtered, pricing-chain forms (FWP / 424B / S-3 / F-10) flagged; optional `issuer` / `form` filters |
 | `ncsx_marks` | Independent second layer — quarterly fair-value marks from fund filings (SEC Form N-PORT, Level 2), converted to spread over matched Treasury |
 | `ncsx_methodology` | Version, DOI, license, data sources, exact formulas, and what is explicitly NOT measured |
 
@@ -71,12 +72,9 @@ curl -s https://spreadbench.com/api/v1/latest.json | python -m json.tool
 
 - Site: <https://spreadbench.com>
 - Methodology: <https://spreadbench.com/methodology.html>
-- Weekly analysis (issue 3 — issuance 432bp vs fund marks 616bp, the 184bp gap decomposed): <https://spreadbench.com/weekly.html>
 - Constituents: <https://spreadbench.com/constituents.html>
 - Citation formats: <https://spreadbench.com/citations.html>
 - Zenodo archive (data + recompute.py): <https://zenodo.org/records/23983572>
-- Official MCP Registry: [`com.spreadbench/ncsx`](https://registry.modelcontextprotocol.io/) (v0.2.3)
-
 
 ## About
 
