@@ -35,6 +35,8 @@ Current level: **NCSX-IS 432.3 bp** (secured 391.2 / unsecured 540.1), 13 bonds 
 | `ncsx_sector` | Context: US high-yield OAS, investment-grade OAS and related indices with 30-day change |
 | `ncsx_filings` | SEC filing radar — last 45 days of filings for the 9 covered issuers, noise forms filtered, pricing-chain forms (FWP / 424B / S-3 / F-10) flagged; optional `issuer` / `form` filters |
 | `ncsx_marks` | Independent second layer — quarterly fair-value marks from fund filings (SEC Form N-PORT, Level 2), converted to spread over matched Treasury |
+| `ncsx_wall` | Maturity wall — outstanding face value by maturity year, secured / unsecured split, plus every bond of the peak year (as of 2026-11-04: **$17.86B, 63.6% of the index, matures in 2031**; 7 of those 8 bonds priced within 2026) |
+| `ncsx_stories` | Citable data stories recomputed live from the same public data, each with headline numbers, bilingual page URLs and a ready-to-post 1200x630 share card — the 2031 maturity wall; the CoreWeave repricing (+191-258bp between issuance and the 2026-08-31 fund marks, while sector peers moved +17.6 to +40.7bp) |
 | `ncsx_methodology` | Version, DOI, license, data sources, exact formulas, and what is explicitly NOT measured |
 
 Every payload carries a `data_status` field: `real_issuance` means observed public issuance data and is safe to quote; anything marked `seed` / `retired_seed` is a deprecated demo series.
