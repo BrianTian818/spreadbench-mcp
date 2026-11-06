@@ -1,83 +1,111 @@
-# SpreadBench · NCSX-IS MCP Server
+# SpreadBench NCSX-IS — MCP server
 
-> Real-time MCP access to **NCSX-IS** — the issuance-spread benchmark for AI-infrastructure ("Neocloud") USD bonds. Constituents: CoreWeave, Nebius, Cipher, Galaxy Digital, Core Scientific, Applied Digital and peers. Every number is rebuilt from **SEC filings and the US Treasury par-yield curve**, and is independently recomputable.
+Official [Model Context Protocol](https://modelcontextprotocol.io) server for **SpreadBench NCSX-IS**, an issuance-spread benchmark for AI-infrastructure (Neocloud) bonds.
 
-**Endpoint**: `https://spreadbench.com/mcp` — Streamable HTTP, no auth required.
+> **What NCSX-IS measures.** For each constituent bond, the coupon minus the US Treasury yield of matching tenor **on that bond's pricing date**, weighted by face value. It is a **point-in-time issuance spread** — event-driven, no daily frequency, and **not** a traded CDS level or a rating. SpreadBench publishes no credit ratings and no investment advice.
+
+Live data: <https://spreadbench.com> · Methodology + DOI: <https://spreadbench.com/methodology.html> · JSON API: <https://spreadbench.com/api.html>
 
 ---
 
-## Why this exists
+## Two ways to connect
 
-AI-infrastructure companies have become one of the largest new issuers of high-yield USD debt, yet there is no public benchmark for what this credit complex costs. NCSX-IS fills that gap with a methodology that is fully public, reproducible, and free:
-
-```
-spread_i = (coupon_i − UST(tenor_i)) × 100 bp
-NCSX-IS  = Σ(spread_i × size_i) / Σ(size_i)
-```
-
-- `coupon_i` comes from SEC filings (424B5, 10-K/10-Q), never from vendors
-- `UST(tenor_i)` is the US Treasury par yield of matching tenor on the bond's **pricing date**, linearly interpolated, never extrapolated
-- Weighted by original face value at issuance
-- **Event-driven and point-in-time**: updated when a new bond prices — there is no daily change, and it is not a traded CDS level
-- Not a credit rating, not investment advice
-
-Current level: **NCSX-IS 432.3 bp** (secured 391.2 / unsecured 540.1), 13 bonds · 6 issuers · $28.06B face value. Version `v0.2.1-real`, archived at Zenodo [10.5281/zenodo.23983572](https://zenodo.org/records/23983572) with a `recompute.py` that reproduces the index from raw inputs (pure stdlib).
-
-## Tools (9)
-
-| Tool | Answers |
-|---|---|
-| `ncsx_latest` | The one number to quote — headline spread, sub-indices, counts, notional, as-of, DOI, `data_status` |
-| `ncsx_index` | Full index definition — all tiers side by side with coverage notes |
-| `ncsx_constituents` | The whole universe — all bonds: issuer, coupon, maturity, size, seniority, pricing date, matched Treasury yield, spread |
-| `ncsx_bond` | Filtered lookup by issuer / ticker / note keyword (e.g. `"CoreWeave"`, `"GLXY"`, `"2031"`) — constituents have no CUSIPs |
-| `ncsx_curve` | The US Treasury par-yield curve used on each pricing date (14 tenors) + history |
-| `ncsx_sector` | Context: US high-yield OAS, investment-grade OAS and related indices with 30-day change |
-| `ncsx_filings` | SEC filing radar — last 45 days of filings for the 9 covered issuers, noise forms filtered, pricing-chain forms (FWP / 424B / S-3 / F-10) flagged; optional `issuer` / `form` filters |
-| `ncsx_marks` | Independent second layer — quarterly fair-value marks from fund filings (SEC Form N-PORT, Level 2), converted to spread over matched Treasury |
-| `ncsx_wall` | Maturity wall — outstanding face value by maturity year, secured / unsecured split, plus every bond of the peak year (as of 2026-11-04: **$17.86B, 63.6% of the index, matures in 2031**; 7 of those 8 bonds priced within 2026) |
-| `ncsx_stories` | Citable data stories recomputed live from the same public data, each with headline numbers, bilingual page URLs and a ready-to-post 1200x630 share card — the 2031 maturity wall; the CoreWeave repricing (+191-258bp between issuance and the 2026-08-31 fund marks, while sector peers moved +17.6 to +40.7bp) |
-| `ncsx_methodology` | Version, DOI, license, data sources, exact formulas, and what is explicitly NOT measured |
-
-Every payload carries a `data_status` field: `real_issuance` means observed public issuance data and is safe to quote; anything marked `seed` / `retired_seed` is a deprecated demo series.
-
-## Connect
-
-**Any MCP client that supports Streamable HTTP** (Claude Desktop, Cursor, Cline, Claude Code, …):
+### 1. Remote (streamable-http, nothing to install)
 
 ```json
 {
   "mcpServers": {
     "ncsx": {
-      "type": "http",
+      "type": "streamable-http",
       "url": "https://spreadbench.com/mcp"
     }
   }
 }
 ```
 
-No API key. No signup. The server is hosted — there is nothing to install.
+Free, no API key, no signup.
 
-Quick smoke test from a terminal:
+### 2. Local (stdio, same tool set)
 
 ```bash
-curl -s https://spreadbench.com/api/v1/latest.json | python -m json.tool
+npm install -g github:BrianTian818/spreadbench-ncsx-mcp
+# or, without npm registry:
+npm install -g https://spreadbench.com/download/ncsx-mcp-0.2.5.tgz
 ```
 
-## Data & license
+```json
+{
+  "mcpServers": {
+    "ncsx": { "command": "ncsx-mcp" }
+  }
+}
+```
 
-- Index data and methodology: **CC BY 4.0** — cite the DOI (`10.5281/zenodo.23983572`, concept DOI `10.5281/zenodo.23977166` always resolves to the latest version)
-- The MCP server itself is hosted at spreadbench.com; this repository is its public interface, documentation, and changelog
-- Full API (no MCP needed): [openapi.json](https://spreadbench.com/openapi.json) · [llms.txt](https://spreadbench.com/llms.txt)
+Both transports share one tool definition file (`tools.js`), so they never drift apart.
 
-## Links
+---
 
-- Site: <https://spreadbench.com>
-- Methodology: <https://spreadbench.com/methodology.html>
-- Constituents: <https://spreadbench.com/constituents.html>
-- Citation formats: <https://spreadbench.com/citations.html>
-- Zenodo archive (data + recompute.py): <https://zenodo.org/records/23983572>
+## Tools
 
-## About
+Eleven read-only tools, all keyless. Every tool declares `readOnlyHint: true` / `destructiveHint: false`, so clients do not prompt for write permission.
 
-Built and maintained by [SpreadBench](https://spreadbench.com) — the credit-spread benchmark for AI infrastructure debt. Issues and feedback welcome via this repo's issue tracker.
+| Tool | Returns |
+|---|---|
+| `ncsx_latest` | **Start here for "what is the level".** Latest NCSX-IS reading, secured / unsecured sub-indices, constituent and issuer counts, notional, as-of date, methodology version, DOI, `data_status` |
+| `ncsx_index` | **Structural, not a single number.** Full index definition, sub-index notionals, coverage notes |
+| `ncsx_constituents` | **The whole universe, no filter.** All 13 constituent bonds: issuer, ticker, coupon, maturity, size, seniority, pricing date, matched Treasury, issuance spread in bp |
+| `ncsx_bond` | **Filtered lookup for one issuer** — matches issuer / ticker / note keyword and returns only matching bonds |
+| `ncsx_curve` | The Treasury par-yield curve used on the pricing date (14 tenors, linear interpolation, no extrapolation) plus recent history |
+| `ncsx_sector` | US high-yield / investment-grade OAS reference series for comparison |
+| `ncsx_marks` | Second, independent layer: quarterly fair-value marks from SEC Form N-PORT filings, converted to spread |
+| `ncsx_filings` | SEC filing radar for the 9 covered issuers: last 45 days, noise forms filtered, pricing-chain forms (FWP / 424B* / S-3* / F-10) flagged `pricing_signal=true`, each row linked to the EDGAR original |
+| `ncsx_wall` | Maturity wall: outstanding face value by maturity year, secured / unsecured split, full bond list of the peak year; pass `year` to drill into one year (as of 2026-11-04: $17.86B — 63.6% of the index — matures in 2031, 7 of those 8 bonds priced in 2026) |
+| `ncsx_stories` | Citable data stories recomputed live from the same public data, each with headline numbers, bilingual page URLs and a ready-to-post 1200x630 share card (the 2031 wall; the CoreWeave repricing: +191-258bp while peers moved 17.6-40.7bp) |
+| `ncsx_facts` | **Quotable-facts layer.** 16 pre-computed numbers covering the whole index, each with `value` / `unit` / `as_of` / `calc` (how it was derived) / `source` — filter by `id` (comma-separated) or `q` (keyword). Use when you need one number to cite, or several at once, instead of stitching five endpoints |
+| `ncsx_methodology` | Methodology version, DOI, license, data sources and their licensing status, full formula chain |
+
+Three names from the demo-era server — `ncsx_levels`, `ncsx_attribution`, `ncsx_weekly` — are **not listed** any more, but still answer if an old client calls them: they return a structured retirement notice rather than an error.
+
+---
+
+## Read `data_status` before you quote anything
+
+Every payload carries a `data_status` field. This is the single most important field in the schema:
+
+| `data_status` | Meaning |
+|---|---|
+| `real_issuance` | Observed public issuance data. Safe to quote; reproducible from SEC filings. |
+| `retired_seed` / `seed` | A **withdrawn demo series**. Numbers were generated for layout testing. **Never quote as market levels.** |
+
+If a tool returns `status: "retired"`, the endpoint was withdrawn — read the `replacement` field and move on. Nothing in this server will silently hand you demo numbers.
+
+---
+
+## Example prompts
+
+- *"What is the current NCSX-IS spread, and how does the unsecured cohort differ from the secured one?"*
+- *"Which CoreWeave bonds are in the index and what spread did each price at?"*
+- *"Compare NCSX-IS against the US high-yield OAS over the last 90 days."*
+- *"Which Treasury tenors does the index lean on most?"*
+- *"Is the NCSX-IS level consistent with the latest SEC N-PORT marks?"*
+
+---
+
+## Conventions
+
+- **Identifier:** constituents are identified by issuer + coupon + maturity. They do **not** carry CUSIPs — do not query by CUSIP.
+- **Units:** spreads in basis points over the Treasury at pricing. Notionals in USD millions.
+- **Frequency:** event-driven. There is no T+1 update and no daily change field.
+- **Reproducibility:** every number is derived from public filings (SEC EDGAR) and the US Treasury par-yield curve. The methodology page states the exact formula and the interpolation rule.
+
+## Notes on naming
+
+Older versions of this server exposed `Composite` / `HY` / `IG` tiers and 90-day daily series. Those came from a demo dataset and were withdrawn on 2026-11-04 in favour of the issuance-spread methodology (`v0.2.0-real`). The three retired names listed above remain callable only so that old clients receive an explicit notice instead of an error; they are hidden from `tools/list`.
+
+## Directory listings
+
+This server is listed in the official [MCP Registry](https://registry.modelcontextprotocol.io) as `com.spreadbench/ncsx`, and is indexed by Glama (`A` tier) and brick.blue. `glama.json` in this repo claims the listing for its maintainer.
+
+## License
+
+MIT. Data is published for research and citation; SpreadBench does not provide credit ratings or investment advice.
