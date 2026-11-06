@@ -30,7 +30,7 @@ Free, no API key, no signup.
 ```bash
 npm install -g github:BrianTian818/spreadbench-ncsx-mcp
 # or, without npm registry:
-npm install -g https://spreadbench.com/download/ncsx-mcp-0.2.5.tgz
+npm install -g https://spreadbench.com/download/ncsx-mcp-0.2.7.tgz
 ```
 
 ```json
@@ -47,7 +47,7 @@ Both transports share one tool definition file (`tools.js`), so they never drift
 
 ## Tools
 
-Eleven read-only tools, all keyless. Every tool declares `readOnlyHint: true` / `destructiveHint: false`, so clients do not prompt for write permission.
+Thirteen read-only tools, all keyless. Every tool declares `readOnlyHint: true` / `destructiveHint: false`, so clients do not prompt for write permission.
 
 | Tool | Returns |
 |---|---|
@@ -62,6 +62,7 @@ Eleven read-only tools, all keyless. Every tool declares `readOnlyHint: true` / 
 | `ncsx_wall` | Maturity wall: outstanding face value by maturity year, secured / unsecured split, full bond list of the peak year; pass `year` to drill into one year (as of 2026-11-04: $17.86B — 63.6% of the index — matures in 2031, 7 of those 8 bonds priced in 2026) |
 | `ncsx_stories` | Citable data stories recomputed live from the same public data, each with headline numbers, bilingual page URLs and a ready-to-post 1200x630 share card (the 2031 wall; the CoreWeave repricing: +191-258bp while peers moved 17.6-40.7bp) |
 | `ncsx_facts` | **Quotable-facts layer.** 16 pre-computed numbers covering the whole index, each with `value` / `unit` / `as_of` / `calc` (how it was derived) / `source` — filter by `id` (comma-separated) or `q` (keyword). Use when you need one number to cite, or several at once, instead of stitching five endpoints |
+| `ncsx_events` | **History, not a daily series.** Replay of all 13 pricing events from 2025-05-19 to 2026-07-24: level after each event, change in bp, notional added, and per-bond pull attribution (`pull_bp` = post-add weight x spread minus pre-add level, so pulls sum to the event delta). Headline: 517.7bp at inception, trough 410.0bp, 432.3bp now, net -85.4bp over 431 days (4 up / 8 down). Filter by `since` ("2026" / "2026-02-05") or `ticker` ("CRWV") |
 | `ncsx_methodology` | Methodology version, DOI, license, data sources and their licensing status, full formula chain |
 
 Three names from the demo-era server — `ncsx_levels`, `ncsx_attribution`, `ncsx_weekly` — are **not listed** any more, but still answer if an old client calls them: they return a structured retirement notice rather than an error.
