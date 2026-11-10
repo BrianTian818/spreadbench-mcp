@@ -1,5 +1,7 @@
 # SpreadBench NCSX-IS — MCP server
 
+[![NCSX-IS](https://spreadbench.com/badge/ncsx-is.svg)](https://spreadbench.com/indices.html)
+
 Official [Model Context Protocol](https://modelcontextprotocol.io) server for **SpreadBench NCSX-IS**, an issuance-spread benchmark for AI-infrastructure (Neocloud) bonds.
 
 > **What NCSX-IS measures.** For each constituent bond, the coupon minus the US Treasury yield of matching tenor **on that bond's pricing date**, weighted by face value. It is a **point-in-time issuance spread** — event-driven, no daily frequency, and **not** a traded CDS level or a rating. SpreadBench publishes no credit ratings and no investment advice.
